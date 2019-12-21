@@ -150,5 +150,3 @@ export async function loadMovieData() {
   }
   return movieList;
 }
-
-loadMovieData()
