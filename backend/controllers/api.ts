@@ -88,7 +88,7 @@ async function findNearestTheaters(x: number, y: number, count: number = 5) {
 }
 
 /**
- * @description GET /theater/near?x=123&y=123
+ * @description GET /theater/near?x=127.03237293819225&y=37.588750090892205
  */
 export async function nearestTheaters(req: Request, res: Response) {
   try {
@@ -103,13 +103,13 @@ export async function nearestTheaters(req: Request, res: Response) {
 }
 
 /**
- * @description GET /movies-near?x=123&y=123&movie=CODE
+ * @description GET /movies-near?x=127.0532794&y=37.5059059&movie=M000074640
  */
 export async function nearestMovies(req: Request, res: Response) {
   try {
     const nearTheaters = await findNearestTheaters(parseFloat(req.query.x ?? 0), parseFloat(req.query.y ?? 0));
     const theaterKeys = nearTheaters.map((x: Models.Theater) => x.naverCode);
-    const slots = Models.MovieSlotModel.find({
+    const slots = await Models.MovieSlotModel.find({
       theaterCode: {
         $in: theaterKeys
       },
