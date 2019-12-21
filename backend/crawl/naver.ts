@@ -138,7 +138,7 @@ export async function loadMovieData() {
     try {
       console.log(`Loading movie ${code}: ${title}`);
       const detailResp = await utils.get(`http://movie.naver.com/movie/api/yes24/movieLink.nhn?M_CODE=${code}`);
-      const imgSrc = cheerio.load(detailResp)('div.poster img')[0].attribs['src'];
+      const imgSrc = cheerio.load(detailResp)('div.poster img')[0].attribs['src'].replace(/\?type=(.*?)$/, '');
       movieList.push({
         movieCode: code,
         title,
