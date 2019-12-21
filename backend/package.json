@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "export BACK_MODE='development' && ts-node app.ts",
-    "prod": "export BACK_MODE='production' && ts-node app.ts"
+    "prod": "export BACK_MODE='production' && ts-node app.ts",
+    "reload": "ts-node run-update.ts"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
