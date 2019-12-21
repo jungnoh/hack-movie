@@ -3,24 +3,29 @@ import styled from "styled-components";
 import GoogleMapReact from 'google-map-react';
 
 const Main = (props) => {
-    const seletedMovie = React.useState({});
-    const seletedTheater = React.useState({});
+    const seletedMovieIdx = React.useState(0);
+    const seletedTheaterIdx = React.useState(0);
     React.useEffect(() => {
-        console.log("movie: ", seletedMovie[0]);
-        console.log("theater: ", seletedTheater[0]);
+        console.log("movie: ", seletedMovieIdx[0]);
+        console.log("theater: ", seletedTheaterIdx[0]);
     })
+    const Movie = (props) => {
+        return (
+            <div className="movie-container" onClick={() => { seletedMovieIdx[1](props.idx) }} style={{ backgroundColor: props.background }}>
+                <div className="poster">
+                    <img src={props.movie.posterUrl} alt={props.movie.title} />
+                </div>
+                <div className="title">
+                    {props.movie.title}
+                </div>
+            </div>
+        )
+    }
     return (<>
         <MovieList>
             {props.movies.map((movie, idx) => {
                 return (
-                    <div key={idx} className="movie-container" onClick={() => { seletedMovie[1](movie) }}>
-                        <div className="poster">
-                            <img src={movie.posterUrl} alt={movie.title} />
-                        </div>
-                        <div className="title">
-                            {movie.title}
-                        </div>
-                    </div>
+                    <Movie key={idx} idx={idx} movie={movie} background={idx === seletedMovieIdx[0] ? "black" : "transparent"} />
                 )
             })}
         </MovieList>
@@ -44,7 +49,7 @@ const Main = (props) => {
                             {
                                 props.theaters.map((theater, idx) => {
                                     return (
-                                        <tr key={idx} onClick={() => { seletedTheater[1](theater) }}>
+                                        <tr key={idx} onClick={() => { seletedTheaterIdx[1](idx) }}>
                                             <td>{idx}</td>
                                             <td>{theater.name}</td>
                                             {/* <td>{theater.distance}km</td> */}
@@ -57,7 +62,22 @@ const Main = (props) => {
                 </div>
             </div>
             <div className="mapBox">
-
+                {/* <GoogleMapReact
+                    bootstrapURLKeys={{ key: 'AIzaSyCGdylwOS37HVgu289UA6q2J4omA81Rd-w' }}
+                    defaultCenter={{ lat: props.theaters[seletedTheaterIdx[0]].coordX, lng: props.theaters[seletedTheaterIdx[0]].coordY }}
+                    defaultZoom={11}
+                >
+                </GoogleMapReact> */}
+                {props.movies.map((movie, idx) => {
+                    if (idx === seletedMovieIdx[0]) {
+                        return (
+                            <img key={idx} src={movie.posterUrl} alt={movie.title} />
+                        )
+                    }
+                    else {
+                        return (<div key={idx} ></div>)
+                    }
+                })}
             </div>
         </TheaterList>
     </>);
@@ -127,9 +147,17 @@ const TheaterList = styled.div`
     .mapBox {
         position: relative;
         width: 300px;
-        background-color: salmon;
+        //background-color: salmon;
         height: 300px;
         margin: 20px;
+        img {
+                position: relative;
+                width: 150px !important;
+                vertical-align: middle;
+                left: 50%;
+                transform: translate(-50%, 0%);
+                top: 50px;
+        }
     }
 `
 
@@ -158,7 +186,6 @@ const MovieList = styled.div`
             img {
                 width: 150px !important;
                 vertical-align: middle;
-                contain: cover;
             }
         }
         .title {
