@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "export BACK_MODE='development' && ts-node app.ts",
-    "prod": "export BACK_MODE='production' && ts-node app.ts",
+    "dev": "cross-env BACK_MODE=development ts-node app.ts",
+    "prod": "cross-env BACK_MODE=production ts-node app.ts",
     "reload": "ts-node run-update.ts"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "axios": "^0.19.0",
     "cheerio": "^1.0.0-rc.3",
     "cookie-parser": "~1.4.4",
+    "cross-env": "^6.0.3",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
