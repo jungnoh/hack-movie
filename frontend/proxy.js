@@ -8,7 +8,7 @@ const server = new ParcelProxyServer({
   proxies: {
     // add proxies here
     '/api': {
-      target: 'localhost:3000/api'
+      target: 'http://localhost:3000'
     }
   }
 });
