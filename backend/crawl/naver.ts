@@ -6,6 +6,8 @@ import { Coords, getCoordsFromAddress } from './map';
 interface NaverTheater {
   code: string;
   name: string;
+  type: string;
+  address: string;
   coords: Coords;
 }
 
@@ -17,9 +19,16 @@ interface MovieTime {
 }
 
 interface NaverMovie {
-  code: string;
+  date: string;
+  movieCode: string;
   name: string;
   times: MovieTime[];
+}
+
+interface NaverMovieEntry {
+  title: string;
+  movieCode: string;
+  posterUrl: string;
 }
 
 const padDate = (day: number) => {
@@ -53,15 +62,16 @@ export async function theaterMovieList(theaterCode: string, date: Date = new Dat
     });
     const times: MovieTime[] = movieResp.map((x: any) => ({
       venue: x[8],
-      hour: x[11].substring(0, 2),
-      minute: x[11].substring(2, 4),
-      runningTime: x[12]
+      hour: parseInt(x[11].substring(0, 2)),
+      minute: parseInt(x[11].substring(2, 4)),
+      runningTime: parseInt(x[12])
     }));
     if (movieResp.length === 0) {
       return null;
     } else {
       return {
-        code: movieCode,
+        movieCode,
+        date: dateString,
         times,
         name: movieResp[0][2]
       };
@@ -91,26 +101,54 @@ export async function naverTheaterAddress(code: string) {
  * @description 네이버 영화목록 가져올 때 페이지에 포함된 영화관 목록을 파싱
  */
 export async function loadTheaterData() {
-  const getTheaterCoords = async (key: string) => {
-    const address = await naverTheaterAddress(key);
-    return await getCoordsFromAddress(address);
-  };
-
   const response = await utils.get('http://ticket.movie.naver.com/Ticket/Reserve.aspx');
   const rawMovieList = JSON.parse(/objTheaterData1 = JSON.parse\('(.*?)'\);/.exec(response)![1]);
   
-  const movieList: {[key: string]: NaverTheater} = {};
+  const movieList: NaverTheater[] = [];
   for (const x of rawMovieList) {
     console.log(`Loading ${x[0]}: ${x[1]}`);
     try {
-      const tCoords = await getTheaterCoords(x[0]);
-      movieList[x[0]] = {
+      const address = await naverTheaterAddress(x[0]);
+      const tCoords = await getCoordsFromAddress(address);
+      movieList.push({
+        address,
         code: x[0],
         name: x[1],
+        type: x[8],
         coords: tCoords
-      };
+      });
     } catch (err) {
       console.log('Failed to add, skipping');
     }
   }
+  return movieList;
 }
+
+/**
+ * @description 네이버 영화목록 가져올 때 페이지에 포함된 영화 목록을 파싱
+ */
+export async function loadMovieData() {
+  const response = await utils.get('http://ticket.movie.naver.com/Ticket/Reserve.aspx');
+  const rawMovieList = JSON.parse(/objMovieData1 = JSON.parse\('(.*?)'\);/.exec(response)![1]);
+  
+  const movieList: NaverMovieEntry[] = [];
+  for (const x of rawMovieList) {
+    const title = x.m3;
+    const code = x.m2;
+    try {
+      console.log(`Loading movie ${code}: ${title}`);
+      const detailResp = await utils.get(`http://movie.naver.com/movie/api/yes24/movieLink.nhn?M_CODE=${code}`);
+      const imgSrc = cheerio.load(detailResp)('div.poster img')[0].attribs['src'];
+      movieList.push({
+        movieCode: code,
+        title,
+        posterUrl: imgSrc
+      });
+    } catch (err) {
+      console.log('Failed to add, skipping');
+    }
+  }
+  return movieList;
+}
+
+loadMovieData()

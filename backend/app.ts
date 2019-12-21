@@ -1,9 +1,15 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import mongoose from 'mongoose';
+import cron from 'node-cron';
 
 import indexRouter from './routes/index';
+import dailyReload, { reloadTheaterList } from './crawl';
 
 const app = express();
 
@@ -20,6 +26,13 @@ if ((process.env.BACK_MODE ?? 'production') == 'development') {
 }
 
 app.use('/api', indexRouter);
+
+mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true});
+cron.schedule('0 0 0 * * *', () => {
+  dailyReload().then(() => {
+    console.log('Daily reload complete!');
+  });
+});
 
 app.listen(3000, () => {
   console.log('Backend listening at port 3000');
