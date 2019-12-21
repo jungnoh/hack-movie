@@ -27,7 +27,11 @@ if ((process.env.BACK_MODE ?? 'production') == 'development') {
 
 app.use('/api', indexRouter);
 
-mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost:27017/test', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+});
 cron.schedule('0 0 0 * * *', () => {
   dailyReload().then(() => {
     console.log('Daily reload complete!');
