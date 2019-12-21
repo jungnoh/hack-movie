@@ -29,7 +29,7 @@ export async function reloadMovieList() {
       console.log(`Adding ${item.movieCode}: ${item.title}`)
       const nItem = new Models.MovieModel({
         naverCode: item.movieCode,
-        title: item.title,
+        title: item.title.trim(),
         posterUrl: item.posterUrl
       });
       await nItem.save();

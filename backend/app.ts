@@ -9,7 +9,7 @@ import mongoose from 'mongoose';
 import cron from 'node-cron';
 
 import indexRouter from './routes/index';
-import dailyReload, { reloadTheaterList } from './crawl';
+import dailyReload from './crawl';
 
 const app = express();
 
