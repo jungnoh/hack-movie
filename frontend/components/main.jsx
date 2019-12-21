@@ -132,7 +132,9 @@ const MovieList = styled.div`
     left: 20px;
     background-color: #333;
     padding-left: 10px;
-    overflow-y: scroll;
+    height: 280px;
+    overflow: auto;
+    white-space: nowrap;
     .movie-container {
         position: relative;
         display: inline-block;
