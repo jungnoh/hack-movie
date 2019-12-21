@@ -8,5 +8,6 @@ router.get('/movie/code/:code', ApiController.getMovieInfoByCode);
 router.get('/movie/name/:name', ApiController.getMovieInfoByName);
 router.get('/theater/near', ApiController.nearestTheaters);
 router.get('/movies-near', ApiController.nearestMovies);
+router.get('/trending', ApiController.trending);
 
 export default router;

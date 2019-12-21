@@ -1,5 +1,6 @@
 import express, {Request, Response} from 'express';
 import * as Models from '../models';
+import { trendingRanks } from '../crawl/naver';
 
 /**
  * @description GET /theater/code/:code
@@ -121,6 +122,20 @@ export async function nearestMovies(req: Request, res: Response) {
     res.status(200).json({
       success: true,
       slots
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({success: false});
+  }
+}
+
+export async function trending(req: Request, res: Response) {
+  try {
+    const items = await trendingRanks();
+    const promises = await Promise.all(items.map(x => Models.MovieModel.findOne({title: x})));
+    res.status(200).json({
+      success: true,
+      items: promises
     });
   } catch (err) {
     console.error(err);

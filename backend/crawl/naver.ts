@@ -150,3 +150,13 @@ export async function loadMovieData() {
   }
   return movieList;
 }
+
+export async function trendingRanks() {
+  const response = await utils.getKorean('https://movie.naver.com/movie/sdb/rank/rmovie.nhn');
+  const items = cheerio.load(response)('div.tit3 > a');
+  const ret = [];
+  for (let i=0; i<10; i++) {
+    ret.push(items[i].children[0].data?.trim());
+  }
+  return ret;
+}
