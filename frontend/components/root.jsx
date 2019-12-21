@@ -1,6 +1,7 @@
 import React from 'react';
-import Scanner from './sacnner';
+import Scanner from './scanner';
 import Main from './main';
+import Axios from 'axios';
 
 const RootComponent = () => {
 
@@ -10,10 +11,37 @@ const RootComponent = () => {
   Theaters.sort(function (a, b) {
     return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0;
   });
+  const trendMovies = React.useState([]);
+  const nearestTheaters = React.useState([]);
+  React.useEffect(() => {
+    // 영화 목록 가져오기
+    Axios.get(`/api/trending`, { withCredentials: true })
+      .then(ans => {
+        trendMovies[1](ans.data.items)
+        console.log("collected trend movies");
+      })
+      .catch(ans => {
+        console.log(ans)
+      })
+    // 가까운 영화 목록 가져오기
+    Axios.get(`/api/theater/near?x=127.03237293819225&y=37.588750090892205`, { withCredentials: true })
+      .then(ans => {
+        nearestTheaters[1](ans.data.theaters);
+        console.log(ans.data.theaters[1])
+        console.log("collected trend theaters");
+      })
+      .catch(ans => {
+        console.log(ans)
+      })
+  }, []);
+
+  var array = trendMovies[0];
+  array.splice(9, 1);
+
   return (
     <>
+      <Main movies={array} theaters={nearestTheaters[0]} />
       {/* <Scanner movies={Movies} /> */}
-      <Main movies={Movies1} theaters={Theaters} />
     </>
   );
 }

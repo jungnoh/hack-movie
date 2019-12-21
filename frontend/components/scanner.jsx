@@ -2,25 +2,25 @@ import React from 'react';
 import styled from "styled-components";
 
 const ListItem = (props) => {
-  const {movie} = props;
+  const { movie } = props;
   <Item key={idx}>
     <div className="movieInfo-container">
       <div className="title-container">
-          <div className="title">
-            {movie.movieCode}
-          </div>
-          <div className="age">
-            {movie.venue}
-          </div>
+        <div className="title">
+          {movie.movieCode}
+        </div>
+        <div className="age">
+          {movie.venue}
+        </div>
       </div>
       <div className="time-container">
-          {/* 조조인지 확인하고 빼는거 구현 못함 ㅜ */}
-          <div className="startTime">
-            {movie.hour}:{movie.minute}
-          </div>
-          <div className="endTime">
-            {movie.runningTime}
-          </div>
+        {/* 조조인지 확인하고 빼는거 구현 못함 ㅜ */}
+        <div className="startTime">
+          {movie.hour}:{movie.minute}
+        </div>
+        <div className="endTime">
+          {movie.runningTime}
+        </div>
       </div>
     </div>
     <div className="theaterInfo-container">
@@ -43,7 +43,6 @@ export default function Scanner(props) {
   );
 }
 
-export default Scanner;
 
 const ItemList = styled.div`
     position: relative;

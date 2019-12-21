@@ -1,14 +1,21 @@
 import React from 'react';
 import styled from "styled-components";
+import GoogleMapReact from 'google-map-react';
 
 const Main = (props) => {
-
+    const seletedMovie = React.useState({});
+    const seletedTheater = React.useState({});
+    React.useEffect(() => {
+        console.log("movie: ", seletedMovie[0]);
+        console.log("theater: ", seletedTheater[0]);
+    })
     return (<>
         <MovieList>
             {props.movies.map((movie, idx) => {
                 return (
-                    <div key={idx} className="movie-container">
+                    <div key={idx} className="movie-container" onClick={() => { seletedMovie[1](movie) }}>
                         <div className="poster">
+                            <img src={movie.posterUrl} alt={movie.title} />
                         </div>
                         <div className="title">
                             {movie.title}
@@ -25,7 +32,7 @@ const Main = (props) => {
                             <tr>
                                 <th>순위</th>
                                 <th>극장</th>
-                                <th>거리</th>
+                                {/* <th>거리</th> */}
                             </tr>
                         </thead>
                     </table>
@@ -37,10 +44,10 @@ const Main = (props) => {
                             {
                                 props.theaters.map((theater, idx) => {
                                     return (
-                                        <tr key={idx}>
+                                        <tr key={idx} onClick={() => { seletedTheater[1](theater) }}>
                                             <td>{idx}</td>
                                             <td>{theater.name}</td>
-                                            <td>{theater.distance}km</td>
+                                            {/* <td>{theater.distance}km</td> */}
                                         </tr>
                                     )
                                 })
@@ -147,8 +154,12 @@ const MovieList = styled.div`
             top: 10px;
             width: 150px;
             height: 213px;
-            background-color: skyblue;
             border: 1px solid black;
+            img {
+                width: 150px !important;
+                vertical-align: middle;
+                contain: cover;
+            }
         }
         .title {
             position: absolute;
