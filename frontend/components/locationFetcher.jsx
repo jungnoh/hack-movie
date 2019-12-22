@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function LocationFetcher(props) {
-  const [loadNeeded, setLoadNeeded] = useEffect(true);
-  const [loading, setLoading] = useEffect(false);
+  const [loadNeeded, setLoadNeeded] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   if (loadNeeded && !loading) {
     setLoadNeeded(false);

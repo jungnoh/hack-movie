@@ -19,6 +19,9 @@ const RootComponent = () => {
       .then(ans => {
         trendMovies[1](ans.data.items)
         console.log("collected trend movies");
+        for(const it of ans.data.items) {
+          localStorage.setItem(it.naverCode, JSON.stringify(it));
+        }
       })
       .catch(ans => {
         console.log(ans)

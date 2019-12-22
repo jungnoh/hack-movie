@@ -1,45 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from "styled-components";
+import { store } from '../xhr';
+import Axios from 'axios';
+
+const reserve = (theater) => {
+  if (theater==='LOTTEC') {
+      window.location.href='http://www.lottecinema.co.kr/LCHS/Contents/ticketing/ticketing.aspx';
+  }
+  else if (theater==='MEGABOX') {
+    window.location.href='http://www.megabox.co.kr/?show=booking&p=step1';
+  }
+  else {
+    window.location.href='http://www.cgv.co.kr/ticket/';
+  }
+};
 
 const ListItem = (props) => {
   const { movie } = props;
-  <Item key={idx}>
-    <div className="movieInfo-container">
-      <div className="title-container">
-        <div className="title">
-          {movie.movieCode}
+  const movieItem = JSON.parse(localStorage.getItem(`${movie.movieCode}`));
+  console.log(movieItem);
+  return (
+    <Item>
+      <div className="movieInfo-container">
+        <div className="title-container">
+          <div className="title">
+            <a href={`https://www.google.com/maps/place/@${props.list[movie.theaterCode].coordX},${props.list[movie.theaterCode].coordY},17z`} target="_blank">{props.list[movie.theaterCode].name}</a>
+          </div>
+          <div className="age">
+            {movie.venue}
+          </div>
         </div>
-        <div className="age">
-          {movie.venue}
+        <div className="time-container">
+          {/* 조조인지 확인하고 빼는거 구현 못함 ㅜ */}
+          <div className="startTime">
+            {movie.hour}:{movie.minute}
+          </div>
+          <div className="endTime">
+            &nbsp;{movie.runningTime}분 상영
+          </div>
         </div>
       </div>
-      <div className="time-container">
-        {/* 조조인지 확인하고 빼는거 구현 못함 ㅜ */}
-        <div className="startTime">
-          {movie.hour}:{movie.minute}
-        </div>
-        <div className="endTime">
-          {movie.runningTime}
+      <div className="theaterInfo-container">
+        <div className="text">
+          {movieItem.title}
         </div>
       </div>
-    </div>
-    <div className="theaterInfo-container">
-      <div className="text">
-        {movie.theaterCode}
+      <div className="button" onClick={() => reserve(props.list[movie.theaterCode].type)}>
+        예매하기
       </div>
-    </div>
-    <div className="button">
-      예매하기
-    </div>
-  </Item>
+    </Item>
+  );
 }
 
 export default function Scanner(props) {
-  const items = props.slots.map((x, id) => <ListItem movie={x} key={id} />);
+  const [ths, setThs] = useState([]);
+  const [tl, setTl] = useState(false);
+
+  if (!tl) {
+    Axios.get('/api/all-theaters').then(v => {
+      setThs(v.data.theaters);
+      setTl(true);
+    });
+  }
+
+  if (!tl) {
+    return (
+      <div>Loading..</div>
+    );
+  }
+  const items = props.slots.map((x, id) => <ListItem movie={x} key={id} list={ths} />);
   return (
-    <ItemList>
-      {items}
-    </ItemList>
+    <>
+      <h2>&nbsp;&nbsp;&nbsp;&nbsp;근처 상영</h2>
+      <ItemList>
+        {items}
+      </ItemList>
+    </>
   );
 }
 

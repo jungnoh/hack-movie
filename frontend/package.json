@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-core": "^6.26.3",
     "parcel": "^1.12.4",
     "parcel-bundler": "^1.12.4",
     "parcel-proxy-server": "^1.1.0"

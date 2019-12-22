@@ -1,29 +1,62 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from "styled-components";
 import GoogleMapReact from 'google-map-react';
+import LocationFetcher from './locationFetcher';
+import * as xhr from '../xhr';
+import Scanner from './scanner';
+
+const setLocation = (location) => {
+  localStorage.setItem('location-x', location.coords.longitude);
+  localStorage.setItem('location-y', location.coords.latitude);
+}
+
+const searchClicked = (movie, cb) => {
+  xhr.loadNearestMovies(localStorage.getItem('location-x'), localStorage.getItem('location-y'), movie, cb);
+}
+
 
 const Main = (props) => {
-    const seletedMovie = React.useState({});
-    const seletedTheater = React.useState({});
-    React.useEffect(() => {
-        console.log("movie: ", seletedMovie[0]);
-        console.log("theater: ", seletedTheater[0]);
-    })
+    const [locFound, setLocFound] = useState(false);
+    const [results, setResults] = useState([]);
+    const seletedMovieIdx = React.useState(0);
+    const [selectedMovie, setSelectedMovie] = React.useState(null);
+
+    const Movie = (props) => {
+        return (
+            <div className="movie-container" onClick={() => {
+                seletedMovieIdx[1](props.idx);
+                setSelectedMovie(props.movie.naverCode);
+            }} style={{ backgroundColor: props.background }}>
+                <div className="poster">
+                    <img src={props.movie.posterUrl} alt={props.movie.title} />
+                </div>
+                <div className="title">
+                    {props.movie.title}
+                </div>
+            </div>
+        )
+    }
+
+    
+    const searchHandler = () => {
+      if (selectedMovie === null) {
+        alert('영화를 선택해주세요.');
+        return;
+      }
+      searchClicked(selectedMovie, (movies) => {
+        setResults(movies);
+      });
+    }
     return (<>
+        <h2>&nbsp;&nbsp;&nbsp;&nbsp;지금 인기있는 영화</h2>
         <MovieList>
             {props.movies.map((movie, idx) => {
                 return (
-                    <div key={idx} className="movie-container" onClick={() => { seletedMovie[1](movie) }}>
-                        <div className="poster">
-                            <img src={movie.posterUrl} alt={movie.title} />
-                        </div>
-                        <div className="title">
-                            {movie.title}
-                        </div>
-                    </div>
+                    <Movie key={idx} idx={idx} movie={movie} background={idx === seletedMovieIdx[0] ? "black" : "transparent"} />
                 )
             })}
         </MovieList>
+        <h2>&nbsp;&nbsp;&nbsp;&nbsp;나와 가까운 극장</h2>
         <TheaterList>
             <div className="theaterBox">
                 <div className="head-table-container">
@@ -44,8 +77,8 @@ const Main = (props) => {
                             {
                                 props.theaters.map((theater, idx) => {
                                     return (
-                                        <tr key={idx} onClick={() => { seletedTheater[1](theater) }}>
-                                            <td>{idx}</td>
+                                        <tr key={idx+1} onClick={() => { setSeletedTheater(theater) }}>
+                                            <td>{idx+1}</td>
                                             <td>{theater.name}</td>
                                             {/* <td>{theater.distance}km</td> */}
                                         </tr>
@@ -57,13 +90,53 @@ const Main = (props) => {
                 </div>
             </div>
             <div className="mapBox">
-
+                {props.movies.map((movie, idx) => {
+                    if (idx === seletedMovieIdx[0]) {
+                        return (
+                            <img key={idx} src={movie.posterUrl} alt={movie.title} />
+                        )
+                    }
+                    else {
+                        return (<div key={idx} ></div>)
+                    }
+                })}
             </div>
         </TheaterList>
+        <LocationFetcher report={(location) => {
+            setLocation(location);
+            setLocFound(true);
+        }} />
+        <SearchRegion>
+        <div className={`btn-container ${locFound?'':'disabled'}`} onClick={searchHandler}>
+            검색
+        </div>
+        </SearchRegion>
+        <Scanner slots={results} />
     </>);
 }
 
 export default Main;
+
+const SearchRegion = styled.div`
+  .btn-container {
+    height: 4rem;
+    margin: 0.5rem 20px;
+    background-color: #0000FF;
+    border-radius: 2rem;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 1.5rem;
+    user-select: none;
+  }
+  .btn-container:hover {
+
+  }
+  .btn-container.disabled, .btn-container.disabled:hover {
+    background-color: #0000aa;
+  }
+`;
 
 const TheaterList = styled.div`
     position: relative;
@@ -127,12 +200,19 @@ const TheaterList = styled.div`
     .mapBox {
         position: relative;
         width: 300px;
-        background-color: salmon;
+        //background-color: salmon;
         height: 300px;
         margin: 20px;
+        img {
+                position: relative;
+                width: 150px !important;
+                vertical-align: middle;
+                left: 50%;
+                transform: translate(-50%, 0%);
+                top: 50px;
+        }
     }
 `
-
 const MovieList = styled.div`
     position: relative;
     width: calc(100% - 50px);
@@ -158,7 +238,6 @@ const MovieList = styled.div`
             img {
                 width: 150px !important;
                 vertical-align: middle;
-                contain: cover;
             }
         }
         .title {
