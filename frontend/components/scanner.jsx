@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { store } from '../xhr';
 import Axios from 'axios';
 
+const padNumber = (n) => (n<10?`0${n}`:n);
+
 const reserve = (theater) => {
   if (theater==='LOTTEC') {
       window.location.href='http://www.lottecinema.co.kr/LCHS/Contents/ticketing/ticketing.aspx';
@@ -33,16 +35,11 @@ const ListItem = (props) => {
         <div className="time-container">
           {/* 조조인지 확인하고 빼는거 구현 못함 ㅜ */}
           <div className="startTime">
-            {movie.hour}:{movie.minute}
+            {padNumber(movie.hour)}:{padNumber(movie.minute)}
           </div>
           <div className="endTime">
             &nbsp;{movie.runningTime}분 상영
           </div>
-        </div>
-      </div>
-      <div className="theaterInfo-container">
-        <div className="text">
-          {movieItem.title}
         </div>
       </div>
       <div className="button" onClick={() => reserve(props.list[movie.theaterCode].type)}>
@@ -84,14 +81,13 @@ const ItemList = styled.div`
     position: relative;
     top: 20px;
     left: 20px;
-    width: 500px;
     height: auto;
     text-align: left;
     margin-bottom: 30px;
 `
 const Item = styled.div`
     position: relative;
-    width: 100%;
+    width: 80%;
     height: 100px;
     border: 1px solid black;
     border-radius: 5px;
@@ -101,7 +97,7 @@ const Item = styled.div`
         position: relative;
         display: flex;
         flex-direction: row;
-        margin-top: 10px;
+        margin-top: 38px;
         margin-left: 20px;
         .title-container {
             margin-right: 20px;
