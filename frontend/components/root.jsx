@@ -12,7 +12,15 @@ const RootComponent = () => {
     return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0;
   });
   const trendMovies = React.useState([]);
-  const nearestTheaters = React.useState([]);
+  const nearestTheaters = React.useState([{
+    coordX: 127.02143495625296,
+    coordY: 37.570977776453645,
+    name: "롯데시네마-황학",
+    naverCode: "T0581",
+    type: "LOTTEC",
+    __v: 0,
+    _id: "5dfe863b1bf4151304b7419d"
+  }]);
   React.useEffect(() => {
     // 영화 목록 가져오기
     Axios.get(`/api/trending`, { withCredentials: true })
