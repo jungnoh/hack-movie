@@ -22,10 +22,13 @@ npm run setup
 ```bash
 echo 'KAKAO_KEY=foo' > backend/.env
 ```
+[카카오 REST API](https://developers.kakao.com/docs/restapi/getting-started)의 키입니다.
 
 ## Run
 ### Development
 ```bash
+# $ pwd
+# /Users/jungnoh/hack-movie
 npm run dev
 ```
 ### Production
