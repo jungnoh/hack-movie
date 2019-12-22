@@ -16,15 +16,17 @@ const searchClicked = (movie, cb) => {
 
 
 const Main = (props) => {
+    const [locFound, setLocFound] = useState(false);
+    const [results, setResults] = useState([]);
     const seletedMovieIdx = React.useState(0);
-    const seletedTheaterIdx = React.useState(0);
-    React.useEffect(() => {
-        console.log("movie: ", seletedMovieIdx[0]);
-        console.log("theater: ", seletedTheaterIdx[0]);
-    })
+    const [selectedMovie, setSelectedMovie] = React.useState(null);
+
     const Movie = (props) => {
         return (
-            <div className="movie-container" onClick={() => { seletedMovieIdx[1](props.idx) }} style={{ backgroundColor: props.background }}>
+            <div className="movie-container" onClick={() => {
+                seletedMovieIdx[1](props.idx);
+                setSelectedMovie(props.movie.naverCode);
+            }} style={{ backgroundColor: props.background }}>
                 <div className="poster">
                     <img src={props.movie.posterUrl} alt={props.movie.title} />
                 </div>
@@ -33,6 +35,17 @@ const Main = (props) => {
                 </div>
             </div>
         )
+    }
+
+    
+    const searchHandler = () => {
+      if (selectedMovie === null) {
+        alert('영화를 선택해주세요.');
+        return;
+      }
+      searchClicked(selectedMovie, (movies) => {
+        setResults(movies);
+      });
     }
     return (<>
         <h2>&nbsp;&nbsp;&nbsp;&nbsp;지금 인기있는 영화</h2>
@@ -64,8 +77,8 @@ const Main = (props) => {
                             {
                                 props.theaters.map((theater, idx) => {
                                     return (
-                                        <tr key={idx} onClick={() => { seletedTheaterIdx[1](idx) }}>
-                                            <td>{idx}</td>
+                                        <tr key={idx+1} onClick={() => { setSeletedTheater(theater) }}>
+                                            <td>{idx+1}</td>
                                             <td>{theater.name}</td>
                                             {/* <td>{theater.distance}km</td> */}
                                         </tr>
@@ -77,12 +90,6 @@ const Main = (props) => {
                 </div>
             </div>
             <div className="mapBox">
-                {/* <GoogleMapReact
-                    bootstrapURLKeys={{ key: 'AIzaSyCGdylwOS37HVgu289UA6q2J4omA81Rd-w' }}
-                    defaultCenter={{ lat: props.theaters[seletedTheaterIdx[0]].coordX, lng: props.theaters[seletedTheaterIdx[0]].coordY }}
-                    defaultZoom={11}
-                >
-                </GoogleMapReact> */}
                 {props.movies.map((movie, idx) => {
                     if (idx === seletedMovieIdx[0]) {
                         return (
@@ -107,9 +114,7 @@ const Main = (props) => {
         <Scanner slots={results} />
     </>);
 }
-
 export default Main;
-
 const SearchRegion = styled.div`
   .btn-container {
     height: 4rem;
@@ -124,13 +129,11 @@ const SearchRegion = styled.div`
     user-select: none;
   }
   .btn-container:hover {
-
   }
   .btn-container.disabled, .btn-container.disabled:hover {
     background-color: #0000aa;
   }
 `;
-
 const TheaterList = styled.div`
     position: relative;
     display: flex;
